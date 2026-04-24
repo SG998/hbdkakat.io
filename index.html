@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Kakat - Memories & Surprises</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #630d0d;
+            --gold: #d4af37;
+            --deep: #1a0202;
+            --cream: #f7e7ce;
+            --neon: #ffcc00;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--deep);
+            color: var(--cream);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        #cursor {
+            position: fixed;
+            width: 10px; height: 10px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        .profile-frame {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            margin: 0 auto 25px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+        .profile-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--deep);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 1.5s;
+        }
+
+        .gift-box { font-size: 100px; cursor: pointer; animation: bounce 2s infinite; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0) scale(1);}
+            40% {transform: translateY(-30px) scale(1.1);}
+        }
+
+        .intro-box {
+            max-width: 550px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px auto;
+            backdrop-filter: blur(10px);
+            line-height: 1.8;
+        }
+
+        #content { display: none; opacity: 0; transition: 2s; }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        h1 { font-family: 'Playfair Display', serif; font-size: 4rem; color: var(--gold); margin: 10px 0; }
+
+        .letter { display: inline-block; transition: 0.3s; cursor: pointer; }
+        .letter:hover { transform: translateY(-10px); color: #fff; text-shadow: 0 0 10px var(--gold); }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+            margin: 50px 0;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 15px 15px 35px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(50px) rotate(var(--r));
+            max-width: 350px;
+            margin: auto;
+        }
+
+        .polaroid.show { opacity: 1; transform: translateY(0) rotate(var(--r)); }
+        .polaroid img { width: 100%; height: 250px; object-fit: cover; }
+        .polaroid p { color: #333; font-family: 'Playfair Display', serif; margin-top: 15px; font-weight: bold; }
+
+        .bts-container {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px dashed var(--gold);
+            margin-bottom: 100px;
+        }
+
+        #bts-img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
+            animation: slideUp 1.5s ease-out;
+        }
+
+        #bts-button {
+            background: var(--gold);
+            color: var(--deep);
+            border: none;
+            padding: 14px 35px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #salah-text { color: #ff4d4d; font-weight: bold; margin: 20px 0; min-height: 24px; font-style: italic; }
+
+        /* AMPLOP STYLING */
+        .envelope-wrapper {
+            margin: 20px auto;
+            cursor: pointer;
+            perspective: 1000px;
+            width: 300px;
+            height: 200px;
+            position: relative;
+        }
+
+        #envelope-hint {
+            color: var(--gold);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 180px;
+            background: #8b6b00;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transition: 0.5s;
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 4;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid var(--gold);
+            transform-origin: top;
+            transition: transform 0.5s 0.2s, z-index 0.1s 0.4s;
+        }
+
+        .envelope.open::before { transform: rotateX(180deg); z-index: 1; }
+
+        .envelope::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 300px; height: 180px;
+            background: var(--gold);
+            clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+            z-index: 3;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .letter-content {
+            position: absolute;
+            bottom: 10px; left: 15px;
+            width: 270px;
+            height: 160px;
+            background: #fff;
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: 0.6s ease-in-out;
+            z-index: 2;
+            border-radius: 5px;
+            opacity: 0;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .envelope.open .letter-content {
+            transform: translateY(-160px);
+            height: 300px;
+            opacity: 1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* COPYRIGHT SECTION - BOLD & RAPI */
+        .copyright {
+            margin-top: 150px;
+            padding-bottom: 40px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+        }
+        
+        .copyright b {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        @keyframes slideUp { from {opacity: 0; transform: translateY(30px);} to {opacity: 1; transform: translateY(0);} }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+
+    <audio id="song1" src="music/1.mp3" loop></audio>
+    <audio id="song2" src="music/2.mp3" loop></audio>
+
+    <div id="overlay">
+        <div class="gift-box" onclick="reveal()">🎁</div>
+        <p style="color: var(--gold); margin-top: 20px; letter-spacing: 3px; font-weight: 600;">OPEN YOUR SURPRISE</p>
+    </div>
+
+    <div id="content">
+        <section>
+            <div class="profile-frame">
+                <img src="photo/2.png" alt="Kakat Profile">
+            </div>
+            <p style="letter-spacing: 6px; font-size: 0.8rem; font-weight: 300;">HAPPY BIRTHDAY</p>
+            <h1 id="nameContainer"></h1>
+            <div class="intro-box">
+                <p style="margin: 0; font-size: 1.1rem;">
+                    Selamat ulang tahun, <b>Kakat</b>! ✨<br>
+                    Semoga hari ini dipenuhi dengan tawa, kado yang banyak, dan kebahagiaan yang tak terhingga! 🎂💜
+                </p>
+            </div>
+            <div style="margin-top: 40px; color: var(--gold); animation: bounce 2s infinite; font-size: 0.8rem; letter-spacing: 2px;">SCROLL DOWN ↓</div>
+        </section>
+
+        <section id="memories">
+            <h2 style="font-family: 'Playfair Display'; color: var(--gold); font-size: 2.5rem; margin-bottom: 10px;">Moments We Cherish</h2>
+            <div class="gallery">
+                <div class="polaroid" style="--r: -3deg;"><img src="photo/5 (1).jpeg" alt="1"><p>Capturing the smiles ✨</p></div>
+                <div class="polaroid" style="--r: 2deg;"><img src="photo/5 (2).jpeg" alt="2"><p>Simply unforgettable</p></div>
+                <div class="polaroid" style="--r: -2deg;"><img src="photo/5 (3).jpeg" alt="3"><p>Good vibes only 🌈</p></div>
+                <div class="polaroid" style="--r: 3deg;"><img src="photo/3.png" alt="4"><p>Tadeus Waseso</p></div>
+                <div class="polaroid" style="--r: -1deg;"><img src="photo/4.png" alt="5"><p>Lee Young-joon</p></div>
+                <div class="polaroid" style="--r: 4deg;"><img src="photo/korea.png" alt="6"><p>Ini saat di korea ya guys</p></div>
+            </div>
+
+            <div class="bts-container">
+                <h3 id="surp-title" style="margin-bottom: 20px;">I have a special surprise for you...</h3>
+                <button id="bts-button" onclick="handleSalah()">KLIK SURPRISE</button>
+                <div id="salah-text"></div>
+                
+                <div id="final-box" style="display: none;">
+                    <p style="font-size: 1.1rem;">Wkwkwk "eee salah eee salah" melulu ya! 😂</p>
+                    <p style="opacity: 0.8;">Bukan tiket kok, cuma mau pamer foto BTS (Behind The Scenes) yang ini aja:</p>
+                    <img id="bts-img" src="photo/1.png" alt="BTS Photo">
+                    <p style="margin-top: 25px; color: var(--gold); font-size: 1.2rem; font-family: 'Playfair Display';">But wait... there's one more thing at the bottom!</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px;">
+                <h2 style="font-family: 'Playfair Display'; color: var(--gold);">A Private Letter</h2>
+                <div id="envelope-hint">Klik amplopnya ya! ✨</div>
+                <div class="envelope-wrapper" onclick="openLetter()">
+                    <div id="mainEnvelope" class="envelope">
+                        <div class="letter-content">
+                            <p style="font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 10px;">Dear Kakat,</p>
+                            <p>
+                                happy birhday ya kat, semoga panjang umur sehat selalu. aku tau kamu capai dengan kehidupan dunia ini, tapi aku bangga banget semua kamu hadapin meskipun berdarah-darah tapi kamu sekuat dan ga pernah menyerah.<br><br>
+                                btw lagu ini pas untuk kita, kita masih baik meskipun tidak diperlakukan dengan baik. masih panjang mimpi dan perjalanan kita. semoga allah selalu lindungin kamu dari hal apapun.<br><br>
+                                maaf ya mba belum bisa jadi mba yang baik tapi mba bisa menjadi partner dalam segala apapun. mba berharap kamu bisa melewati semua nya dan kita semua happy ending. huahh mba ngetiknya sambil melow.<br><br>
+                                ini mba nisa yang buat atasan requesan mba mu ini. yukk bisa planning kita kedepan bisa menjadi orang yang sukses dunia akhirat. amiiinnn
+                            </p>
+                            <p style="text-align: right; font-weight: bold; margin-top: 20px;">- Mbak Nisa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="copyright"><b>Copyright © AFS 2026. All Rights Reserved.</b></p>
+        </section>
+    </div>
+
+    <script>
+        const song1 = document.getElementById('song1');
+        const song2 = document.getElementById('song2');
+        const cursor = document.getElementById('cursor');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            if(Math.random() > 0.85) spawnSparkle(e.clientX, e.clientY);
+        });
+
+        function spawnSparkle(x, y) {
+            const s = document.createElement('div');
+            s.innerHTML = '✨';
+            s.style.position = 'fixed';
+            s.style.left = x + 'px'; s.style.top = y + 'px';
+            s.style.fontSize = '12px'; s.style.pointerEvents = 'none';
+            document.body.appendChild(s);
+            s.animate([{opacity: 1}, {opacity: 0, transform: 'translateY(20px) scale(0)'}], 1000);
+            setTimeout(() => s.remove(), 1000);
+        }
+
+        const name = "KAKAT";
+        const container = document.getElementById('nameContainer');
+        name.split('').forEach(l => {
+            const span = document.createElement('span');
+            span.innerText = l; span.className = 'letter';
+            container.appendChild(span);
+        });
+
+        function reveal() {
+            document.getElementById('overlay').style.opacity = '0';
+            song1.play().catch(e => console.log("Audio play deferred"));
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                setTimeout(() => document.getElementById('content').style.opacity = '1', 100);
+                document.body.style.overflowY = 'auto';
+            }, 1500);
+            for(let i=0; i<35; i++) setTimeout(spawnBalloon, i * 120);
+        }
+
+        function spawnBalloon() {
+            const b = document.createElement('div');
+            b.innerHTML = ['🎈', '💖', '✨', '🎁', '🎂'][Math.floor(Math.random() * 5)];
+            b.style.position = 'fixed';
+            b.style.left = Math.random() * 100 + 'vw';
+            b.style.bottom = '-50px';
+            b.style.fontSize = '25px';
+            document.body.appendChild(b);
+            const d = 4000 + Math.random() * 3000;
+            b.animate([{bottom: '-50px'}, {bottom: '110vh', transform: `rotate(${Math.random()*360}deg)`}], d);
+            setTimeout(() => b.remove(), d);
+        }
+
+        let count = 0;
+        const msg = ["Eee salah...", "Eh salah klik...", "Kok salah lagi?", "Aduh sabar ya...", "Dikit lagi beneran..."];
+        function handleSalah() {
+            const sText = document.getElementById('salah-text');
+            const btn = document.getElementById('bts-button');
+            if(count < msg.length) {
+                sText.innerText = msg[count];
+                btn.style.transform = `scale(${1 - count*0.05}) rotate(${Math.random()*10-5}deg)`;
+                count++;
+            } else {
+                document.getElementById('surp-title').style.display = 'none';
+                btn.style.display = 'none';
+                sText.style.display = 'none';
+                document.getElementById('final-box').style.display = 'block';
+                document.getElementById('bts-img').style.display = 'block';
+            }
+        }
+
+        function openLetter() {
+            const env = document.getElementById('mainEnvelope');
+            const hint = document.getElementById('envelope-hint');
+            if(!env.classList.contains('open')) {
+                env.classList.add('open');
+                hint.style.display = 'none'; 
+                song1.pause();
+                song1.currentTime = 0;
+                song2.play().catch(e => console.log("Audio play deferred"));
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.polaroid').forEach(p => {
+                if(p.getBoundingClientRect().top < window.innerHeight - 80) p.classList.add('show');
+            });
+        });
+    </script>
+</body>
+</html>
